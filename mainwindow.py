@@ -1,5 +1,6 @@
 import sys
 import matplotlib
+from copy import deepcopy
 matplotlib.use('QtAgg')
 from PyQt6 import QtCore, QtGui, QtWidgets, QtGui
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
@@ -37,6 +38,56 @@ class MplCanvas(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         super(MplCanvas, self).__init__(self.fig)
+
+class MPL_Widget(QtWidgets.QDockWidget):
+    def __init__(self, title, *args, **kwargs):
+        super(MPL_Widget, self).__init__(title, *args, **kwargs)
+
+        '''
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding
+        )
+        '''
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.graph = MplCanvas(self)
+        self.toolbar = NavigationToolbar(self.graph, self)
+
+        self.layout.addWidget(self.toolbar)
+        self.layout.addWidget(self.graph)
+
+        self.scale_layout = QtWidgets.QHBoxLayout()
+        self.x_scale_box = QtWidgets.QComboBox()
+        self.x_scale_box.addItems(['Линейно', 'Логарифмически'])
+        self.x_label = QtWidgets.QLabel('X:')
+        self.y_scale_box = QtWidgets.QComboBox()
+        self.y_scale_box.addItems(['Линейно', 'Логарифмически'])
+        self.y_label = QtWidgets.QLabel('Y:')
+        self.scale_layout.addWidget(self.x_label)
+        self.scale_layout.addWidget(self.x_scale_box)
+        self.scale_layout.addWidget(self.y_label)
+        self.scale_layout.addWidget(self.y_scale_box)
+        self.layout.addLayout(self.scale_layout)
+
+        self.setLayout(self.layout)
+
+
+        self.x_scale_box.textActivated.connect(
+            lambda scale:
+            self.__rescale(self.graph.axes, scale, 0))
+        self.y_scale_box.textActivated.connect(
+            lambda scale:
+            self.__rescale(self.graph.axes, scale, 1))
+
+
+    def __rescale(self, graph, scale, axis):
+        print("Масштаб:", scale)
+        scales = {'Линейно': 'linear', 'Логарифмически': "log"}
+        if axis == 0:
+            graph.set_xscale(scales[scale])
+        else:
+            graph.set_yscale(scales[scale])
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -99,13 +150,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rescale(self.plot.axes, scale, 1))
 
     def init_spectrum(self):
-        self.spectrum = MplCanvas(self)
-        self.spectrum.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
-        self.spectrum_toolbar = NavigationToolbar(self.spectrum, self)
-        self.spectrum_layout.addWidget(self.spectrum_toolbar)
-        self.spectrum_layout.addWidget(self.spectrum)
-        self.spectrum_x_scale_box.addItems(['Линейно', 'Логарифмически'])
-        self.spectrum_y_scale_box.addItems(['Линейно', 'Логарифмически'])
+        self.spectrum = MPL_Widget("Спектр")
+        self.spectrum.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.spectrum)
 
     def init_log(self):
         self.print_log('Лог запущен')
