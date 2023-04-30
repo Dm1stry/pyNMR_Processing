@@ -3,7 +3,7 @@ import matplotlib
 from copy import deepcopy
 matplotlib.use('QtAgg')
 from PyQt6 import QtCore, QtGui, QtWidgets, QtGui
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 
@@ -51,7 +51,7 @@ class MPL_Widget(QtWidgets.QDockWidget):
         '''
 
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.graph = MplCanvas(self)
+        self.graph = MplCanvas()
         self.toolbar = NavigationToolbar(self.graph, self)
 
         self.layout.addWidget(self.toolbar)
