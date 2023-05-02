@@ -129,7 +129,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.plot_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
         self.plot_layout.addLayout(self.plot_element.layout)
 
-
     def init_spectrum(self):
         self.spectrum_element = MPL_element("Спектр")
         self.spectrum_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
@@ -137,7 +136,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def init_log(self):
         self.print_log('Лог запущен')
-
 
     def print_log(self, text):
         out = str(text) + '\t' + QtCore.QDateTime.toString(QtCore.QDateTime.currentDateTime()) + '\n'
