@@ -12,26 +12,6 @@ from processors import *
 from data import *
 import os
 
-'''class VerticalNavigationToolbar(NavigationToolbar):
-   def __init__(self, canvas, window):
-      super().__init__(canvas, window, pack_toolbar=False)
-
-   # override _Button() to re-pack the toolbar button in vertical direction
-   def _Button(self, text, image_file, toggle, command):
-      b = super()._Button(text, image_file, toggle, command)
-      b.pack(side=tk.TOP) # re-pack button in vertical direction
-      return b
-
-   # override _Spacer() to create vertical separator
-   def _Spacer(self):
-      s = tk.Frame(self, width=26, relief=tk.RIDGE, bg="DarkGray", padx=2)
-      s.pack(side=tk.TOP, pady=5) # pack in vertical direction
-      return s
-
-   # disable showing mouse position in toolbar
-   def set_message(self, s):
-      pass
-'''
 class MPL_element:
     def __init__(self, title, *args, **kwargs):
 
@@ -41,12 +21,73 @@ class MPL_element:
                 self.axes = self.fig.add_subplot(111)
                 super(MplCanvas, self).__init__(self.fig)
 
-        self.layout = QtWidgets.QVBoxLayout()
-        self.graph = MplCanvas()
-        self.toolbar = NavigationToolbar(self.graph)
+        class ToolButton(QtWidgets.QPushButton):
+            def __init__(self, name: str, action, hint="", parent=None, *args, **kwargs):
+                super().__init__(parent, *args, **kwargs)
+                extension = '.svg'
+                path = './src/mpl_tools/'
+                full_path = path + name + extension
+                pixmap = QtGui.QPixmap(full_path)
+                icon = QtGui.QIcon(pixmap)
+                self.setIcon(icon)
 
-        self.layout.addWidget(self.toolbar)
-        self.layout.addWidget(self.graph)
+                self.setToolTip(hint)
+
+                self.clicked.connect(action)
+
+
+        class VerticalToolbar(QtWidgets.QWidget):
+            def __init__(self, canvas, parent=None):
+                super().__init__(parent, *args, **kwargs)
+                self.toolbar = NavigationToolbar(canvas)
+                self.toolbar.hide()
+                self.toolbar_layout = QtWidgets.QVBoxLayout()
+                self.home_toolbar_button = ToolButton('home', self.toolbar.home, hint="Восстановить исходный вид")
+                self.toolbar_layout.addWidget(self.home_toolbar_button)
+                self.back_toolbar_button = ToolButton('back', self.toolbar.back, hint="Вернуться на шаг назад")
+                self.toolbar_layout.addWidget(self.back_toolbar_button)
+                self.forward_toolbar_button = ToolButton('forward', self.toolbar.forward, hint="Восстановить отмененный шаг")
+                self.toolbar_layout.addWidget(self.forward_toolbar_button)
+                self.pan_toolbar_button = ToolButton('pan', self.toolbar.pan, hint="Левая кнопка мыши - переместить\n"
+                                                                                   "Правая - увеличить\n"
+                                                                                   "x/y - Зафиксировать ось\n"
+                                                                                   "CTRL - зафиксировать вид")
+                self.toolbar_layout.addWidget(self.pan_toolbar_button)
+                self.zoom_toolbar_button = ToolButton('zoom', self.toolbar.zoom, hint="Увеличить выделенную область\n"
+                                                                                      "x/y - Зафиксировать ось")
+                self.toolbar_layout.addWidget(self.zoom_toolbar_button)
+                self.subplots_toolbar_button = ToolButton('subplots', self.toolbar.configure_subplots, hint="Настройки графиков")
+                self.toolbar_layout.addWidget(self.subplots_toolbar_button)
+                self.settings_toolbar_button = ToolButton('settings', self.toolbar.edit_parameters, hint="Настройки отображения")
+                self.toolbar_layout.addWidget(self.settings_toolbar_button)
+                self.save_toolbar_button = ToolButton('save', self.toolbar.save_figure, hint="Сохранить в файл")
+                self.toolbar_layout.addWidget(self.save_toolbar_button)
+
+
+                spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+                self.toolbar_layout.addItem(spacer)
+                self.setLayout(self.toolbar_layout)
+                self.show()
+
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.graph_layout = QtWidgets.QHBoxLayout()
+        self.graph = MplCanvas()
+        '''
+        self.toolbar = NavigationToolbar(self.graph)
+        self.toolbar.hide()
+        self.toolbar_layout = QtWidgets.QVBoxLayout()
+        self.home_toolbar_button = ToolButton('home', self.toolbar.home)
+        self.toolbar_layout.addWidget(self.home_toolbar_button)
+        '''
+        self.toolbar = VerticalToolbar(self.graph)
+
+        self.graph_layout.addWidget(self.graph)
+        self.graph_layout.addWidget(self.toolbar)
+        #self.graph_layout.addLayout(self.toolbar_layout)
+        #self.graph_layout.addWidget(self.toolbar)
+
+        self.layout.addLayout(self.graph_layout)
 
         self.scale_layout = QtWidgets.QHBoxLayout()
         self.x_scale_box = QtWidgets.QComboBox()
