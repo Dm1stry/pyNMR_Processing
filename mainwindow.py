@@ -39,9 +39,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes = self.fig.add_subplot(111)
         super(MplCanvas, self).__init__(self.fig)
 
-class MPL_Widget(QtWidgets.QDockWidget):
+class MPL_element:
     def __init__(self, title, *args, **kwargs):
-        super(MPL_Widget, self).__init__(title, *args, **kwargs)
+        #super(MPL_Widget, self).__init__(title, *args, **kwargs)
 
         '''
         self.setSizePolicy(
@@ -50,9 +50,9 @@ class MPL_Widget(QtWidgets.QDockWidget):
         )
         '''
 
-        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout = QtWidgets.QVBoxLayout()
         self.graph = MplCanvas()
-        self.toolbar = NavigationToolbar(self.graph, self)
+        self.toolbar = NavigationToolbar(self.graph)
 
         self.layout.addWidget(self.toolbar)
         self.layout.addWidget(self.graph)
@@ -68,9 +68,9 @@ class MPL_Widget(QtWidgets.QDockWidget):
         self.scale_layout.addWidget(self.x_scale_box)
         self.scale_layout.addWidget(self.y_label)
         self.scale_layout.addWidget(self.y_scale_box)
+        horizontal_spacer = QtWidgets.QSpacerItem(40, 0, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        self.scale_layout.addItem(horizontal_spacer)
         self.layout.addLayout(self.scale_layout)
-
-        self.setLayout(self.layout)
 
 
         self.x_scale_box.textActivated.connect(
@@ -150,9 +150,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rescale(self.plot.axes, scale, 1))
 
     def init_spectrum(self):
-        self.spectrum = MPL_Widget("Спектр")
-        self.spectrum.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
-        self.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.spectrum)
+        self.spectrum_element = MPL_element("Спектр")
+        self.spectrum_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+        self.spectrum_layout.addLayout(self.spectrum_element.layout)
 
     def init_log(self):
         self.print_log('Лог запущен')
