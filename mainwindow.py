@@ -29,8 +29,12 @@ class MPL_element:
                 full_path = path + name + extension
                 pixmap = QtGui.QPixmap(full_path)
                 icon = QtGui.QIcon(pixmap)
-                self.setIcon(icon)
 
+
+                size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
+
+                self.setSizePolicy(size_policy)
+                self.setIcon(icon)
                 self.setToolTip(hint)
 
                 self.clicked.connect(action)
@@ -39,6 +43,10 @@ class MPL_element:
         class VerticalToolbar(QtWidgets.QWidget):
             def __init__(self, canvas, parent=None):
                 super().__init__(parent, *args, **kwargs)
+                size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
+                                                    QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+
+                self.setSizePolicy(size_policy)
                 self.toolbar = NavigationToolbar(canvas)
                 self.toolbar.hide()
                 self.toolbar_layout = QtWidgets.QVBoxLayout()
