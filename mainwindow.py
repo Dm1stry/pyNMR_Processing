@@ -41,14 +41,6 @@ class MplCanvas(FigureCanvasQTAgg):
 
 class MPL_element:
     def __init__(self, title, *args, **kwargs):
-        #super(MPL_Widget, self).__init__(title, *args, **kwargs)
-
-        '''
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
-            QtWidgets.QSizePolicy.Policy.MinimumExpanding
-        )
-        '''
 
         self.layout = QtWidgets.QVBoxLayout()
         self.graph = MplCanvas()
@@ -71,7 +63,6 @@ class MPL_element:
         horizontal_spacer = QtWidgets.QSpacerItem(40, 0, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
         self.scale_layout.addItem(horizontal_spacer)
         self.layout.addLayout(self.scale_layout)
-
 
         self.x_scale_box.textActivated.connect(
             lambda scale:
@@ -134,20 +125,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.print_log("END FUCK YOU")
 
     def init_plot(self):
-        self.plot = MplCanvas(self)
-        self.plot.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
-        self.plot_toolbar = NavigationToolbar(self.plot, self)
-        self.plot_layout.addWidget(self.plot_toolbar)
-        self.plot_layout.addWidget(self.plot)
-        self.plot_x_scale_box.addItems(['Линейно', 'Логарифмически'])
-        self.plot_y_scale_box.addItems(['Линейно', 'Логарифмически'])
+        self.plot_element = MPL_element("График")
+        self.plot_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+        self.plot_layout.addLayout(self.plot_element.layout)
 
-        self.plot_x_scale_box.textActivated.connect(
-            lambda scale:
-                self.rescale(self.plot.axes, scale, 0))
-        self.plot_y_scale_box.textActivated.connect(
-            lambda scale:
-                self.rescale(self.plot.axes, scale, 1))
 
     def init_spectrum(self):
         self.spectrum_element = MPL_element("Спектр")
