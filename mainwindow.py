@@ -32,15 +32,14 @@ import os
    def set_message(self, s):
       pass
 '''
-
-class MplCanvas(FigureCanvasQTAgg):
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = self.fig.add_subplot(111)
-        super(MplCanvas, self).__init__(self.fig)
-
 class MPL_element:
     def __init__(self, title, *args, **kwargs):
+
+        class MplCanvas(FigureCanvasQTAgg):
+            def __init__(self, parent=None, width=5, height=4, dpi=100):
+                self.fig = Figure(figsize=(width, height), dpi=dpi)
+                self.axes = self.fig.add_subplot(111)
+                super(MplCanvas, self).__init__(self.fig)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.graph = MplCanvas()
