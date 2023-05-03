@@ -116,6 +116,26 @@ class MPL_element:
         else:
             graph.set_yscale(scales[scale])
 
+class Processing_element:
+    def __init__(self, processors):
+        self.layout = QtWidgets.QGridLayout()
+        self.tikhonov_button = QtWidgets.QPushButton("Тихонов")
+        self.tikhonov_parameters_button = QtWidgets.QPushButton("...")
+        self.seq_search_button = QtWidgets.QPushButton("Посл. Поиск")
+        self.seq_search_parameters_button = QtWidgets.QPushButton("Посл. Поиск")
+
+        self.tikhonov_button.clicked.connect(processors[0].Process)
+        self.seq_search_button.clicked.connect(processors[1].Process)
+
+        self.layout.addWidget(self.tikhonov_button, 0, 0)
+        self.layout.addWidget(self.tikhonov_parameters_button, 0, 1)
+        self.layout.addWidget(self.seq_search_button, 1, 0)
+        self.layout.addWidget(self.seq_search_parameters_button, 1, 1)
+
+    #def TikhonovProcess(self):
+
+
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):

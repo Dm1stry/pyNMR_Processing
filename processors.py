@@ -3,8 +3,13 @@ import numpy as np
 
 
 class Processor(ABC):
+
     @abstractmethod
-    def Process(self, T_min, T_max, data, iterations=1000):
+    def setParams(self):
+        pass
+
+    @abstractmethod
+    def Process(self):
         pass
 
     @abstractmethod
@@ -17,6 +22,7 @@ class Processor(ABC):
 
 
 class TikhonovProcessor(Processor):
+
     def __init__(self):
         self.__K = None
         self.__s = None
@@ -25,12 +31,23 @@ class TikhonovProcessor(Processor):
         self.__p = None
         self.__alfa = 0
 
-    def Process(self, T_min, T_max, data, iterations=1000):
+        self.T_min = 0
+        self.T_max = 10e6
+        self.data = None
+        self.iterations = 1000
+
+    def setParams(self, T_min, T_max, data, iterations=1000):
+        self.T_min = T_min
+        self.T_max = T_max
+        self.data = data
+        self.iterations = iterations
+
+    def Process(self):
         self.__alfa = 20
         p_size = 10000
-        self.__p = np.logspace(np.log10(1 / T_max), np.log10(1 / T_min), p_size)
-        self.__t = data[:, 0]
-        self.__s = data[:, 1]
+        self.__p = np.logspace(np.log10(1 / self.T_max), np.log10(1 / self.T_min), p_size)
+        self.__t = self.data[:, 0]
+        self.__s = self.data[:, 1]
         pp, tt = np.meshgrid(self.__p, self.__t)
         self.__K = np.exp(-pp * tt)
         K_t = np.transpose(self.__K)
@@ -38,7 +55,7 @@ class TikhonovProcessor(Processor):
 
         W = np.linalg.inv(K_t @ self.__K + self.__alfa * np.eye(self.__p.size))
         K_t_s = K_t @ self.__s
-        for i in range(iterations):
+        for i in range(self.iterations):
             self.__r = W @ (K_t_s + self.__alfa * self.__r)
             self.__r[self.__r < 0] = 0
 
