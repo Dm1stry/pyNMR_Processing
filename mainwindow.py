@@ -1,9 +1,9 @@
 import sys
 import matplotlib
 from copy import deepcopy
-matplotlib.use('QtAgg')
+matplotlib.use('Qt5Agg')
 from PyQt6 import QtCore, QtGui, QtWidgets, QtGui, Qt6
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 
@@ -55,13 +55,10 @@ class MPL_element:
                 self.toolbar_layout.addWidget(self.back_toolbar_button)
                 self.forward_toolbar_button = ToolButton('forward', self.toolbar.forward, hint="Восстановить отмененный шаг")
                 self.toolbar_layout.addWidget(self.forward_toolbar_button)
-                self.pan_toolbar_button = ToolButton('pan', self.toolbar.pan, hint="Левая кнопка мыши - переместить\n"
-                                                                                   "Правая - увеличить\n"
-                                                                                   "x/y - Зафиксировать ось\n"
-                                                                                   "CTRL - зафиксировать вид")
+                self.pan_toolbar_button = ToolButton('pan', self.toolbar.pan, hint="Левая кнопка мыши - Переместить\n"
+                                                                                   "Правая - Увеличить\n")
                 self.toolbar_layout.addWidget(self.pan_toolbar_button)
-                self.zoom_toolbar_button = ToolButton('zoom', self.toolbar.zoom, hint="Увеличить выделенную область\n"
-                                                                                      "x/y - Зафиксировать ось")
+                self.zoom_toolbar_button = ToolButton('zoom', self.toolbar.zoom, hint="Увеличить выделенную область\n")
                 self.toolbar_layout.addWidget(self.zoom_toolbar_button)
                 self.subplots_toolbar_button = ToolButton('subplots', self.toolbar.configure_subplots, hint="Настройки графиков")
                 self.toolbar_layout.addWidget(self.subplots_toolbar_button)
