@@ -5,7 +5,7 @@ import numpy as np
 class Processor(ABC):
 
     @abstractmethod
-    def setParams(self):
+    def setParams(self, params):
         pass
 
     @abstractmethod
@@ -36,11 +36,11 @@ class TikhonovProcessor(Processor):
         self.data = None
         self.iterations = 1000
 
-    def setParams(self, T_min, T_max, data, iterations=1000):
-        self.T_min = T_min
-        self.T_max = T_max
-        self.data = data
-        self.iterations = iterations
+    def setParams(self, params):
+        self.T_min = params.T_min
+        self.T_max = params.T_max
+        self.data = params.data
+        self.iterations = params.iterations
 
     def Process(self):
         self.__alfa = 20
