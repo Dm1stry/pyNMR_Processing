@@ -2,7 +2,7 @@ import sys
 import matplotlib
 from copy import deepcopy
 matplotlib.use('QtAgg')
-from PyQt6 import QtCore, QtGui, QtWidgets, QtGui
+from PyQt6 import QtCore, QtGui, QtWidgets, QtGui, Qt6
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
@@ -38,7 +38,6 @@ class MPL_element:
                 self.setToolTip(hint)
 
                 self.clicked.connect(action)
-
 
         class VerticalToolbar(QtWidgets.QWidget):
             def __init__(self, canvas, parent=None):
@@ -81,19 +80,11 @@ class MPL_element:
         self.layout = QtWidgets.QVBoxLayout()
         self.graph_layout = QtWidgets.QHBoxLayout()
         self.graph = MplCanvas()
-        '''
-        self.toolbar = NavigationToolbar(self.graph)
-        self.toolbar.hide()
-        self.toolbar_layout = QtWidgets.QVBoxLayout()
-        self.home_toolbar_button = ToolButton('home', self.toolbar.home)
-        self.toolbar_layout.addWidget(self.home_toolbar_button)
-        '''
+
         self.toolbar = VerticalToolbar(self.graph)
 
         self.graph_layout.addWidget(self.graph)
         self.graph_layout.addWidget(self.toolbar)
-        #self.graph_layout.addLayout(self.toolbar_layout)
-        #self.graph_layout.addWidget(self.toolbar)
 
         self.layout.addLayout(self.graph_layout)
 
@@ -137,9 +128,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initUi()
         self.Processor = TikhonovProcessor()
 
-
-
-        #self.tikhonov_process_button.clicked.connect()
     def initUi(self):
         uic.loadUi("./mainwindow.ui", self)
 
@@ -168,7 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data.read(path)
         self.print_log(('data прочитана:', self.data.get_data()))
         t, A = self.data.get_data()
-        self.plot.axes.plot(t, A)
+        self.plot_element.graph.axes.plot(t, A)
         self.print_log(path)
         self.print_log("END FUCK YOU")
 
@@ -190,25 +178,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.log_data += out
         self.log.insertPlainText(out)
 
-    def rescale(self, graph, scale, axis):
-        print("Масштаб:", scale)
-        scales = {'Линейно': 'linear', 'Логарифмически': "log"}
-        if axis == 0:
-            graph.set_xscale(scales[scale])
-        else:
-            graph.set_yscale(scales[scale])
-
     def closeEvent(self, event):
         print('closing')
         with open('Log.txt', 'w') as f:
             print(self.log_data, file=f)
-        settings = QtCore.QSettings()
+        settings = QtCore.QSettings("./settings.ini", QtCore.QSettings.Format.IniFormat)
         settings.setValue('geometry', self.saveGeometry())
         settings.setValue('windowState', self.saveState())
         super(MainWindow, self).closeEvent(event)
 
     def readSettings(self):
-        settings = QtCore.QSettings()
+        settings = QtCore.QSettings("./settings.ini", QtCore.QSettings.Format.IniFormat)
         if settings.value("geometry") is not None:
             self.restoreGeometry(settings.value("geometry"))
         if settings.value("windowState") is not None:
