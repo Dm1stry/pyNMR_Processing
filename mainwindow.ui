@@ -41,21 +41,10 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
-      <widget class="QPushButton" name="tikhonov_button">
-       <property name="text">
-        <string>Тихонов</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="process_layout"/>
      </item>
      <item>
-      <widget class="QPushButton" name="minimum_entropy_button">
-       <property name="text">
-        <string>Посл. Поиск</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
+      <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>

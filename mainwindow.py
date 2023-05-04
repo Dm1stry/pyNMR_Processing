@@ -67,8 +67,7 @@ class MPL_element:
                 self.save_toolbar_button = ToolButton('save', self.toolbar.save_figure, hint="Сохранить в файл")
                 self.toolbar_layout.addWidget(self.save_toolbar_button)
 
-
-                spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+                spacer = QtWidgets.QSpacerItem(0, 40, vPolicy=QtWidgets.QSizePolicy.Policy.MinimumExpanding)
                 self.toolbar_layout.addItem(spacer)
                 self.setLayout(self.toolbar_layout)
                 self.show()
@@ -117,22 +116,47 @@ class MPL_element:
             graph.set_yscale(scales[scale])
 
 class Processing_element:
-    def __init__(self, processors):
+    def __init__(self, processors, window):
+        self.parent_window = window
+        self.processors = processors
         self.layout = QtWidgets.QGridLayout()
         self.tikhonov_button = QtWidgets.QPushButton("Тихонов")
+        self.tikhonov_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Maximum)
         self.tikhonov_parameters_button = QtWidgets.QPushButton("...")
+        self.tikhonov_parameters_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
+                                           QtWidgets.QSizePolicy.Policy.Maximum)
         self.seq_search_button = QtWidgets.QPushButton("Посл. Поиск")
-        self.seq_search_parameters_button = QtWidgets.QPushButton("Посл. Поиск")
+        self.seq_search_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.Policy.Maximum)
+        self.seq_search_parameters_button = QtWidgets.QPushButton("...")
+        self.tikhonov_parameters_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
+                                                      QtWidgets.QSizePolicy.Policy.Maximum)
 
-        self.tikhonov_button.clicked.connect(processors[0].Process)
-        self.seq_search_button.clicked.connect(processors[1].Process)
+        self.tikhonov_button.clicked.connect(self.TikhonovProcess)
+        #self.seq_search_button.clicked.connect(processors[1].Process)
 
         self.layout.addWidget(self.tikhonov_button, 0, 0)
         self.layout.addWidget(self.tikhonov_parameters_button, 0, 1)
         self.layout.addWidget(self.seq_search_button, 1, 0)
         self.layout.addWidget(self.seq_search_parameters_button, 1, 1)
 
-    #def TikhonovProcess(self):
+    def TikhonovProcess(self):
+        window.print_log("Button clicked")
+        params = 0
+        params.T_max = 1e9
+        params.T_min = 1e-6
+        params.iterations = int(1e4)
+
+        window.print_log("Processing started")
+        self.processors[0].setParams(params)
+        self.processors[0].Process(window.data.get_data())
+        window.print_log("Processing ended")
+
+        #return self.processors[0].getSpectrum()
+        spectrum = self.processors[0].getSpectrum()
+        window.spectrum_element.graph.axes.plot(spectrum[0], spectrum[1])
+        window.print_log("Spectrum is ready")
 
 
 
@@ -155,8 +179,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.init_plot()
         self.init_spectrum()
         self.init_filesystem_widget()
+        self.init_processing_interface()
 
         self.readSettings()
+
+    def init_processing_interface(self):
+        processing = Processing_element([TikhonovProcessor(), TikhonovProcessor()], self)
+        self.process_layout.addLayout(processing.layout)
+
 
     def init_filesystem_widget(self):
         tree = QtWidgets.QTreeView()
@@ -169,13 +199,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_filesystem_clicked(self, index):
         path = self.sender().model().filePath(index)
-        self.print_log(('path:', path))
+        self.print_log('path: ' + path)
         self.data.read(path)
-        self.print_log(('data прочитана:', self.data.get_data()))
+        self.print_log('Данные прочитаны')
         t, A = self.data.get_data()
         self.plot_element.graph.axes.plot(t, A)
-        self.print_log(path)
-        self.print_log("END FUCK YOU")
 
     def init_plot(self):
         self.plot_element = MPL_element("График")
@@ -191,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.print_log('Лог запущен')
 
     def print_log(self, text):
-        out = str(text) + '\t' + QtCore.QDateTime.toString(QtCore.QDateTime.currentDateTime()) + '\n'
+        out = QtCore.QDateTime.toString(QtCore.QDateTime.currentDateTime()) + '\t' + str(text) + '\n'
         self.log_data += out
         self.log.insertPlainText(out)
 

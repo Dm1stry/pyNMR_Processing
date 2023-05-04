@@ -9,7 +9,7 @@ class Processor(ABC):
         pass
 
     @abstractmethod
-    def Process(self):
+    def Process(self, data):
         pass
 
     @abstractmethod
@@ -39,15 +39,14 @@ class TikhonovProcessor(Processor):
     def setParams(self, params):
         self.T_min = params.T_min
         self.T_max = params.T_max
-        self.data = params.data
         self.iterations = params.iterations
 
-    def Process(self):
+    def Process(self, data):
         self.__alfa = 20
         p_size = 10000
         self.__p = np.logspace(np.log10(1 / self.T_max), np.log10(1 / self.T_min), p_size)
-        self.__t = self.data[:, 0]
-        self.__s = self.data[:, 1]
+        self.__t = data[:, 0]
+        self.__s = data[:, 1]
         pp, tt = np.meshgrid(self.__p, self.__t)
         self.__K = np.exp(-pp * tt)
         K_t = np.transpose(self.__K)
