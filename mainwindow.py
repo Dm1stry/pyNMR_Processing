@@ -27,8 +27,7 @@ class MPL_element:
                 extension = '.svg'
                 path = './src/mpl_tools/'
                 full_path = path + name + extension
-                pixmap = QtGui.QPixmap(full_path)
-                icon = QtGui.QIcon(pixmap)
+                icon = QtGui.QIcon(full_path)
 
 
                 size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
@@ -133,16 +132,17 @@ class Processing_element:
         self.tikhonov_parameters_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
                                                       QtWidgets.QSizePolicy.Policy.Maximum)
 
-        self.tikhonov_button.clicked.connect(self.TikhonovProcess)
-        #self.seq_search_button.clicked.connect(processors[1].Process)
-
         self.layout.addWidget(self.tikhonov_button, 0, 0)
         self.layout.addWidget(self.tikhonov_parameters_button, 0, 1)
         self.layout.addWidget(self.seq_search_button, 1, 0)
         self.layout.addWidget(self.seq_search_parameters_button, 1, 1)
 
+        self.tikhonov_button.clicked.connect(self.TikhonovProcess)
+        # self.seq_search_button.clicked.connect(processors[1].Process)
+
     def TikhonovProcess(self):
         window.print_log("Button clicked")
+        print("Кнопка жмакнута")
         params = 0
         params.T_max = 1e9
         params.T_min = 1e-6
