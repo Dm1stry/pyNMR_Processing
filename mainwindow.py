@@ -112,21 +112,22 @@ class MPL_element:
 
         self.x_scale_box.textActivated.connect(
             lambda scale:
-            self.__rescale(self.graph.axes, scale, 0))
+            self.__rescale(scale, 0))
         self.y_scale_box.textActivated.connect(
             lambda scale:
-            self.__rescale(self.graph.axes, scale, 1))
+            self.__rescale(scale, 1))
 
-
-    def __rescale(self, graph, scale, axis):
-        print("Масштаб:", scale)
-        scales = {'Линейно': 'linear', 'Логарифмически': "log"}
+    def __rescale(self, scale, axis):
+        scales = {'Линейно': 'linear', 'Логарифмически': 'log'}
         if axis == 0:
-            graph.set_xscale(scales[scale])
+            self.graph.axes.set_xscale(scales[scale])
+            self.graph.fig.canvas.draw()
         else:
-            graph.set_yscale(scales[scale])
+            self.graph.axes.set_yscale(scales[scale])
+            self.graph.fig.canvas.draw()
 
 class Processing_element:
+
     def __init__(self, processors, window):
         self.parent_window = window
         self.processors = processors
@@ -149,28 +150,25 @@ class Processing_element:
         self.layout.addWidget(self.seq_search_button, 1, 0)
         self.layout.addWidget(self.seq_search_parameters_button, 1, 1)
 
-        self.tikhonov_button.clicked.connect(self.TikhonovProcess)
-        # self.seq_search_button.clicked.connect(processors[1].Process)
+        self.tikhonov_button.clicked.connect(self.TikhonovProcess()) # <------- Не работает хоть убейся
 
     def TikhonovProcess(self):
-        window.print_log("Button clicked")
-        params = 0
-        params.T_max = 1e9
-        params.T_min = 1e-6
-        params.iterations = int(1e4)
+        self.parent_window.print_log("Button clicked")
 
-        window.print_log("Processing started")
+        class params:
+            T_max = 1e9
+            T_min = 1e-6
+            iterations = int(1e4)
+
+        self.parent_window.print_log("Processing started")
         self.processors[0].setParams(params)
-        self.processors[0].Process(window.data.get_data())
-        window.print_log("Processing ended")
+        #self.processors[0].Process(window.data.get_data())
+        self.parent_window.print_log("Processing ended")
 
         #return self.processors[0].getSpectrum()
         spectrum = self.processors[0].getSpectrum()
         window.spectrum_element.graph.axes.plot(spectrum[0], spectrum[1])
         window.print_log("Spectrum is ready")
-
-
-
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
