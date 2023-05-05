@@ -17,10 +17,20 @@ class MPL_element:
             def __init__(self, parent=None, width=5, height=4, dpi=100):
                 self.fig = Figure(figsize=(width, height), dpi=dpi)
                 self.axes = self.fig.add_subplot(111)
+                self.axes.set_xlabel("T")
+                self.axes.set_ylabel("A")
+                self.fig.tight_layout()
+
+
                 super(MplCanvas, self).__init__(self.fig)
 
+            '''def __get_color(self):
+                cmap = matplotlib.pyplot.get_cmap('jet_r')
+                N = 10
+                for i in range(N):
+                    yield cmap(float(i)/N)'''
             def plot_draw(self, data_x, data_y):
-                self.axes.plot(data_x, data_y)
+                self.axes.scatter(data_x, data_y, s=0.5)
                 self.fig.canvas.draw()
 
         class ToolButton(QtWidgets.QPushButton):
