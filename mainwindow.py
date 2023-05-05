@@ -1,8 +1,7 @@
 import sys
 import matplotlib
-from copy import deepcopy
 matplotlib.use('Qt5Agg')
-from PyQt6 import QtCore, QtGui, QtWidgets, QtGui, Qt6
+from PyQt6 import QtCore, QtGui, QtWidgets, QtGui
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
@@ -10,7 +9,6 @@ from matplotlib.figure import Figure
 from PyQt6 import uic
 from processors import *
 from data import *
-import os
 
 class MPL_element:
     def __init__(self, title, *args, **kwargs):
@@ -20,6 +18,10 @@ class MPL_element:
                 self.fig = Figure(figsize=(width, height), dpi=dpi)
                 self.axes = self.fig.add_subplot(111)
                 super(MplCanvas, self).__init__(self.fig)
+
+            def plot_draw(self, data_x, data_y):
+                self.axes.plot(data_x, data_y)
+                self.fig.canvas.draw()
 
         class ToolButton(QtWidgets.QPushButton):
             def __init__(self, name: str, action, hint="", parent=None, *args, **kwargs):
@@ -142,7 +144,6 @@ class Processing_element:
 
     def TikhonovProcess(self):
         window.print_log("Button clicked")
-        print("Кнопка жмакнута")
         params = 0
         params.T_max = 1e9
         params.T_min = 1e-6
@@ -203,7 +204,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data.read(path)
         self.print_log('Данные прочитаны')
         t, A = self.data.get_data()
-        self.plot_element.graph.axes.plot(t, A)
+        self.plot_element.graph.plot_draw(t, A)
 
     def init_plot(self):
         self.plot_element = MPL_element("График")
