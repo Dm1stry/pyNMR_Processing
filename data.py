@@ -16,4 +16,4 @@ class Data:
                     self.A.append(float(splited_line[1].strip()))
 
     def get_data(self):
-        return self.t, self.A
+        return [self.t, self.A]

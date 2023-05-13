@@ -129,8 +129,10 @@ class MPL_element:
 class Processing_element:
 
     def __init__(self, processors, window):
+
         self.parent_window = window
         self.processors = processors
+        '''
         self.layout = QtWidgets.QGridLayout()
         self.tikhonov_button = QtWidgets.QPushButton("Тихонов")
         self.tikhonov_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
@@ -149,8 +151,8 @@ class Processing_element:
         self.layout.addWidget(self.tikhonov_parameters_button, 0, 1)
         self.layout.addWidget(self.seq_search_button, 1, 0)
         self.layout.addWidget(self.seq_search_parameters_button, 1, 1)
-
-        self.tikhonov_button.clicked.connect(self.TikhonovProcess()) # <------- Не работает хоть убейся
+        '''
+        window.tikhonov_button.clicked.connect(self.TikhonovProcess)  # <------- Не работает хоть убейся
 
     def TikhonovProcess(self):
         self.parent_window.print_log("Button clicked")
@@ -176,7 +178,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.log_data = ''
         self.data = Data()
         self.initUi()
-        self.Processor = TikhonovProcessor()
+        #self.Processor = TikhonovProcessor()
 
     def initUi(self):
         uic.loadUi("./mainwindow.ui", self)
@@ -193,8 +195,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readSettings()
 
     def init_processing_interface(self):
-        processing = Processing_element([TikhonovProcessor(), TikhonovProcessor()], self)
-        self.process_layout.addLayout(processing.layout)
+        #processing = Processing_element([TikhonovProcessor(), TikhonovProcessor()], self)
+        self.tikhonov_button.clicked.connect(self.on_tikhonov_process_clicked)
+
+    def on_tikhonov_process_clicked(self):
+        self.print_log("Button clicked")
+        class params:
+            T_max = 1e9
+            T_min = 1e-6
+            iterations = int(1e4)
+
+        processor = TikhonovProcessor()
+        processor.setParams(params())
+        self.print_log("Processing started")
+        processor.Process(self.data.get_data())
+        '''self.print_log("Processing ended")
+        spectrum = processor.getSpectrum()
+        self.spectrum_element.graph.axes(spectrum[0], spectrum[1])
+        self.print_log("Spectrum plotted")'''
+
+
 
 
     def init_filesystem_widget(self):

@@ -45,18 +45,22 @@ class TikhonovProcessor(Processor):
         self.__alfa = 20
         p_size = 10000
         self.__p = np.logspace(np.log10(1 / self.T_max), np.log10(1 / self.T_min), p_size)
-        self.__t = data[:, 0]
-        self.__s = data[:, 1]
+        print(data[0])
+        self.__t = np.array(data[0])
+        self.__s = np.array(data[1])
         pp, tt = np.meshgrid(self.__p, self.__t)
         self.__K = np.exp(-pp * tt)
         K_t = np.transpose(self.__K)
         self.__r = np.zeros_like(self.__p)
 
+        print("matrixes created")
         W = np.linalg.inv(K_t @ self.__K + self.__alfa * np.eye(self.__p.size))
         K_t_s = K_t @ self.__s
         for i in range(self.iterations):
             self.__r = W @ (K_t_s + self.__alfa * self.__r)
             self.__r[self.__r < 0] = 0
+
+        print("Process ended")
 
     def getSpectrum(self):
         return [1/self.__p, self.__r]
