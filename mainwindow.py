@@ -209,10 +209,10 @@ class MainWindow(QtWidgets.QMainWindow):
         processor.setParams(params())
         self.print_log("Processing started")
         processor.Process(self.data.get_data())
-        '''self.print_log("Processing ended")
+        self.print_log("Processing ended")
         spectrum = processor.getSpectrum()
         self.spectrum_element.graph.axes(spectrum[0], spectrum[1])
-        self.print_log("Spectrum plotted")'''
+        self.print_log("Spectrum plotted")
 
 
 
