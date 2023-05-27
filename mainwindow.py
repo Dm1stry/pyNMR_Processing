@@ -6,6 +6,7 @@ from PyQt6 import uic
 
 from data import *
 from MPL_element import MPL_element
+from tikhonov_settings_window import TikhonovSettingsWindow
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -25,6 +26,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.init_plot()
         self.init_spectrum()
         self.init_filesystem_widget()
+        self.init_processing_element()
 
         self.readSettings()
 
@@ -57,6 +59,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def init_log(self):
         self.print_log('Лог запущен')
+
+    def init_processing_element(self):
+        self.tikhonov_button.clicked.connect(lambda : print('a'))
+        self.log_reg_button.clicked.connect(lambda : print('b'))
+        self.tikhonov_settings = TikhonovSettingsWindow()
+        self.tikhonov_params_button.clicked.connect(self.tikhonov_settings.show)
 
     def print_log(self, text):
         out = QtCore.QDateTime.toString(QtCore.QDateTime.currentDateTime()) + '\t' + str(text) + '\n'
