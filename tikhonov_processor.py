@@ -38,7 +38,7 @@ class TikhonovProcessor(QObject):
         pp, tt = np.meshgrid(p, t)
         K = np.exp(-pp * tt)
 
-        r = self.__regularizate(K, np.zeros(self.params.p_size), s, self.params.alpha, self.params.iterations)
+        r = self.__regularigation(K, np.zeros(self.params.p_size), s, self.params.alpha, self.params.iterations)
 
         self.results = Results()
         self.results.t = t
