@@ -2,7 +2,7 @@ from PyQt6.QtCore import QObject
 import numpy as np
 
 
-class Params:
+class TikhonovParams:
     alpha = 200
     iterations = 1000
     T_min = 1e-9
@@ -16,6 +16,12 @@ class Params:
         self.alpha = alpha
         self.p_size = p_size
 
+    def setParams(self, params):
+        self.T_min = params.T_min
+        self.T_max = params.T_max
+        self.iterations = params.iterations
+        self.alpha = params.alpha
+        self.p_size = params.p_size
 class Results:
     t = None
     A = None
@@ -25,16 +31,17 @@ class Results:
 class TikhonovProcessor(QObject):
     def __init__(self):
         super().__init__()
-        self.params = None
+        self.params = TikhonovParams()
         self.results = None
 
-    def setParams(self, params=Params()):
+    def setParams(self, params):
         self.params = params
 
     def Process(self, data):
         p = np.logspace(np.log10(1 / self.params.T_max), np.log10(1 / self.params.T_min), self.params.p_size)
-        t = data[:, 0]
-        s = data[:, 1]
+        ts = data.get_data()
+        t = ts[0]
+        s = ts[1]
         pp, tt = np.meshgrid(p, t)
         K = np.exp(-pp * tt)
 

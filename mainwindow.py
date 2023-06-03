@@ -7,6 +7,7 @@ from PyQt6 import uic
 from data import *
 from MPL_element import MPL_element
 from tikhonov_settings_window import TikhonovSettingsWindow
+from tikhonov_processor import TikhonovProcessor, TikhonovParams
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -61,10 +62,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.print_log('Лог запущен')
 
     def init_processing_element(self):
-        self.tikhonov_button.clicked.connect(lambda : print('a'))
-        self.log_reg_button.clicked.connect(lambda : print('b'))
-        self.tikhonov_settings = TikhonovSettingsWindow()
+        self.tikhonov_processor = TikhonovProcessor()
+        self.tikhonov_params = TikhonovParams()
+        self.tikhonov_button.clicked.connect(self.on_tikhonov_process_clicked)
+        print(self.tikhonov_params.alpha)
+        self.tikhonov_settings = TikhonovSettingsWindow(self.tikhonov_params, self)
         self.tikhonov_params_button.clicked.connect(self.tikhonov_settings.show)
+        self.log_reg_button.clicked.connect(lambda: print(self.tikhonov_params.alpha))
+
+    def on_tikhonov_process_clicked(self):
+        self.tikhonov_processor.Process(self.data)
+        curve_t, curve_A = self.tikhonov_processor.getCurve()
+        spectrum_t, spectrum_A = self.tikhonov_processor.getSpectrum()
+        self.plot_element.graph.plot_draw(curve_t, curve_A)
+        self.spectrum_element.graph.plot_draw(spectrum_t, spectrum_A)
 
     def print_log(self, text):
         out = QtCore.QDateTime.toString(QtCore.QDateTime.currentDateTime()) + '\t' + str(text) + '\n'
