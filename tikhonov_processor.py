@@ -38,13 +38,14 @@ class TikhonovProcessor(QObject):
         self.params = params
 
     def Process(self, data):
+        print("Processing started")
         p = np.logspace(np.log10(1 / self.params.T_max), np.log10(1 / self.params.T_min), self.params.p_size)
         ts = data.get_data()
         t = ts[0]
         s = ts[1]
         pp, tt = np.meshgrid(p, t)
         K = np.exp(-pp * tt)
-
+        print("Regularization started")
         r = self.__regularigation(K, np.zeros(self.params.p_size), s, self.params.alpha, self.params.iterations)
 
         self.results = Results()
@@ -52,6 +53,7 @@ class TikhonovProcessor(QObject):
         self.results.A = K @ r
         self.results.pt = 1/p
         self.results.p = r
+        print("Results saved")
 
     def __regularigation(self, K, r, s, alfa, iterations):
         K_t = np.ascontiguousarray(np.transpose(K))
@@ -67,7 +69,9 @@ class TikhonovProcessor(QObject):
         return r
 
     def getSpectrum(self):
+        print("Spectrum returned")
         return self.results.pt, self.results.p
 
     def getCurve(self):
+        print("Curve returned")
         return self.results.t, self.results.A

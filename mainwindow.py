@@ -33,11 +33,25 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def init_filesystem_widget(self):
         tree = QtWidgets.QTreeView()
+        dir_path_layout = QtWidgets.QHBoxLayout()
+        dir_path_edit = QtWidgets.QLineEdit()
+        dir_path_edit.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                    QtWidgets.QSizePolicy.Policy.Maximum)
+        dir_path_button = QtWidgets.QPushButton("Выбрать")
+        dir_path_open_explorer_button = QtWidgets.QPushButton("...")
+        dir_path_open_explorer_button.setMaximumWidth(20)
+        dir_path_open_explorer_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
+                                                    QtWidgets.QSizePolicy.Policy.Maximum)
+        dir_path_layout.addWidget(dir_path_edit)
+        dir_path_layout.addWidget(dir_path_open_explorer_button)
+        dir_path_layout.addWidget(dir_path_button)
+        self.filesystem_layout.addLayout(dir_path_layout)
         self.filesystem_layout.addWidget(tree)
         model = QtGui.QFileSystemModel()
         model.setRootPath(QtCore.QDir.currentPath())
         tree.setModel(model)
         tree.setRootIndex(model.index(QtCore.QDir.currentPath()))
+
         tree.clicked.connect(self.on_filesystem_clicked)
 
     def on_filesystem_clicked(self, index):
@@ -74,6 +88,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tikhonov_processor.Process(self.data)
         curve_t, curve_A = self.tikhonov_processor.getCurve()
         spectrum_t, spectrum_A = self.tikhonov_processor.getSpectrum()
+        print("Plotting started")
         self.plot_element.graph.plot_draw(curve_t, curve_A)
         self.spectrum_element.graph.plot_draw(spectrum_t, spectrum_A)
 
