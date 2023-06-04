@@ -32,27 +32,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readSettings()
 
     def init_filesystem_widget(self):
-        tree = QtWidgets.QTreeView()
-        dir_path_layout = QtWidgets.QHBoxLayout()
-        dir_path_edit = QtWidgets.QLineEdit()
-        dir_path_edit.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+        self.tree = QtWidgets.QTreeView()
+        self.dir_path_layout = QtWidgets.QHBoxLayout()
+        self.dir_path_edit = QtWidgets.QLineEdit()
+        self.dir_path_edit.setText(QtCore.QDir.currentPath())
+        self.dir_path_edit.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
                                     QtWidgets.QSizePolicy.Policy.Maximum)
         dir_path_button = QtWidgets.QPushButton("Выбрать")
         dir_path_open_explorer_button = QtWidgets.QPushButton("...")
         dir_path_open_explorer_button.setMaximumWidth(20)
         dir_path_open_explorer_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
                                                     QtWidgets.QSizePolicy.Policy.Maximum)
-        dir_path_layout.addWidget(dir_path_edit)
-        dir_path_layout.addWidget(dir_path_open_explorer_button)
-        dir_path_layout.addWidget(dir_path_button)
-        self.filesystem_layout.addLayout(dir_path_layout)
-        self.filesystem_layout.addWidget(tree)
-        model = QtGui.QFileSystemModel()
-        model.setRootPath(QtCore.QDir.currentPath())
-        tree.setModel(model)
-        tree.setRootIndex(model.index(QtCore.QDir.currentPath()))
+        self.dir_path_layout.addWidget(self.dir_path_edit)
+        self.dir_path_layout.addWidget(dir_path_open_explorer_button)
+        self.dir_path_layout.addWidget(dir_path_button)
+        self.filesystem_layout.addLayout(self.dir_path_layout)
+        self.filesystem_layout.addWidget(self.tree)
+        self.model = QtGui.QFileSystemModel()
+        self.model.setRootPath(QtCore.QDir.currentPath())
+        self.tree.setModel(self.model)
+        self.tree.setRootIndex(self.model.index(QtCore.QDir.currentPath()))
 
-        tree.clicked.connect(self.on_filesystem_clicked)
+        self.tree.clicked.connect(self.on_filesystem_clicked)
+        dir_path_open_explorer_button.clicked.connect(self.on_dir_path_open_explorer_button_clicked)
+        dir_path_button.clicked.connect(self.on_dir_path_button_clicked)
 
     def on_filesystem_clicked(self, index):
         path = self.sender().model().filePath(index)
@@ -61,6 +64,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.print_log('Данные прочитаны')
         t, A = self.data.get_data()
         self.plot_element.graph.plot_draw(t, A)
+
+    def on_dir_path_open_explorer_button_clicked(self):
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
+        if dialog.exec():
+            self.dir_path_edit.setText(str(dialog.selectedFiles()[0]))
+
+    def on_dir_path_button_clicked(self):
+        self.model.setRootPath(self.dir_path_edit.text())
+        self.tree.setRootIndex(self.model.index(self.dir_path_edit.text()))
 
     def init_plot(self):
         self.plot_element = MPL_element("График")
