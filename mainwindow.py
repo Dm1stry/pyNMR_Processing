@@ -20,8 +20,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def initUi(self):
         uic.loadUi("./mainwindow.ui", self)
 
-        self.setDockNestingEnabled(True)  # Allows widgets docks side by side
-        self.takeCentralWidget()  # Removes central widget of window
+        self.set_window_params()
 
         self.init_log()
         self.init_plot()
@@ -30,6 +29,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.init_processing_element()
 
         self.readSettings()
+
+    def set_window_params(self):
+        self.setDockNestingEnabled(True)  # Allows widgets docks side by side
+        self.takeCentralWidget()  # Removes central widget of window
+
+        pixmap = QtGui.QPixmap(1, 1)
+        pixmap.fill(QtGui.QColor(0, 0, 0, 0))
+        self.window_icon = QtGui.QIcon(pixmap)
+        self.window_title = "Обработка ЯМР релаксации"
+
+        self.setWindowIcon(self.window_icon)
+        self.setWindowTitle(self.window_title)
 
     def init_filesystem_widget(self):
         self.tree = QtWidgets.QTreeView()
@@ -59,7 +70,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_filesystem_clicked(self, index):
         path = self.sender().model().filePath(index)
-        self.print_log('path: ' + path)
+        self.print_log('Файл: ' + path)
         self.data.read(path)
         self.print_log('Данные прочитаны')
         self.tikhonov_button.setEnabled(True)
@@ -78,12 +89,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def init_plot(self):
         self.plot_element = MPL_element("График")
-        self.plot_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+        #self.plot_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
         self.plot_layout.addLayout(self.plot_element.layout)
 
     def init_spectrum(self):
         self.spectrum_element = MPL_element("Спектр")
-        self.spectrum_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+        #self.spectrum_element.graph.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
         self.spectrum_layout.addLayout(self.spectrum_element.layout)
 
     def init_log(self):
