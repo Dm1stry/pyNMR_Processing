@@ -105,10 +105,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tikhonov_params = TikhonovParams()
         self.tikhonov_button.setEnabled(False)
         self.tikhonov_button.clicked.connect(self.on_tikhonov_process_clicked)
-        print(self.tikhonov_params.alpha)
         self.tikhonov_settings = TikhonovSettingsWindow(self.tikhonov_params, self)
         self.tikhonov_params_button.clicked.connect(self.tikhonov_settings.show)
-        #self.log_reg_button.clicked.connect(lambda: print(self.tikhonov_params.alpha))
 
     def on_tikhonov_process_clicked(self):
         self.tikhonov_processor.Process(self.data)

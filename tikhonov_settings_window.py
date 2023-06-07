@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6 import uic
 
 from tikhonov_processor import TikhonovParams
@@ -14,6 +14,13 @@ class TikhonovSettingsWindow(QtWidgets.QWidget):
 
     def initUi(self):
         uic.loadUi("./tikhonov_settings_window.ui", self)
+
+        self.set_window_params()
+        self.init_fields()
+
+        self.readSettings()
+
+    def init_fields(self):
         self.connect_slots()
         self.alpha_edit.setText(str(self.params.alpha))
         self.T_min_edit.setText(str(self.params.T_min))
@@ -27,7 +34,14 @@ class TikhonovSettingsWindow(QtWidgets.QWidget):
         onlyIntP_size.setRange(100, 10000)
         self.p_size_edit.setValidator(onlyIntP_size)
 
+    def set_window_params(self):
+        pixmap = QtGui.QPixmap(1, 1)
+        pixmap.fill(QtGui.QColor(0, 0, 0, 0))
+        self.window_icon = QtGui.QIcon(pixmap)
+        self.window_title = "Настройка - Тихонов"
 
+        self.setWindowIcon(self.window_icon)
+        self.setWindowTitle(self.window_title)
 
     def connect_slots(self):
         self.save_settings.clicked.connect(self.on_save_clicked)
@@ -98,3 +112,13 @@ class TikhonovSettingsWindow(QtWidgets.QWidget):
                                       " значение не изменено.")
         else:
             self.params.p_size = p_size
+
+    def closeEvent(self, event):
+        settings = QtCore.QSettings("./tikhonov_settings.ini", QtCore.QSettings.Format.IniFormat)
+        settings.setValue('geometry', self.saveGeometry())
+        super().closeEvent(event)
+
+    def readSettings(self):
+        settings = QtCore.QSettings("./tikhonov_settings.ini", QtCore.QSettings.Format.IniFormat)
+        if settings.value("geometry") is not None:
+            self.restoreGeometry(settings.value("geometry"))
