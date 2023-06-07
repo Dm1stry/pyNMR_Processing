@@ -26,7 +26,7 @@ class TikhonovSettingsWindow(QtWidgets.QWidget):
         onlyIntP_size = QtGui.QIntValidator()
         onlyIntP_size.setRange(100, 10000)
         self.p_size_edit.setValidator(onlyIntP_size)
-        
+
 
 
     def connect_slots(self):

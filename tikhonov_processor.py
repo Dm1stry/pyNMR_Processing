@@ -60,10 +60,11 @@ class TikhonovProcessor(QObject):
 
         W = np.ascontiguousarray(np.linalg.inv(K_t @ K + alfa * np.eye(r.size)))
         s = np.ascontiguousarray(s)
-        K_t_s = np.ascontiguousarray(K_t @ s)
+        W_K_t_s = np.ascontiguousarray(W @ (K_t @ s))
+        W_alfa = np.ascontiguousarray(W @ alfa)
 
         for i in range(iterations):
-            r = W @ (K_t_s + alfa * r)
+            r = W_K_t_s + W_alfa @ r
             r[r < 0] = 0
 
         return r

@@ -89,6 +89,15 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="inputMask">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="maxLength">
+        <number>6</number>
+       </property>
        <property name="placeholderText">
         <string>1000</string>
        </property>
