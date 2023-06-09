@@ -1,5 +1,6 @@
 import sys
 from multiprocessing import Pool, Process
+from decimal import Decimal
 
 from PyQt6 import QtCore, QtGui, QtWidgets, QtGui
 from PyQt6 import uic
@@ -115,6 +116,11 @@ class MainWindow(QtWidgets.QMainWindow):
         spectrum_t, spectrum_A = self.tikhonov_processor.getSpectrum()
         self.plot_element.graph.plot_draw(curve_t, curve_A)
         self.spectrum_element.graph.plot_draw(spectrum_t, spectrum_A)
+        components = self.tikhonov_processor.getComponents()
+        result_string = "\n"
+        for index, component in enumerate(components):
+            result_string += "\t" + str(index) + ") T = " + str('%.2E' % Decimal(component[0])) + "\tДоля: " + str(round(component[1], 2)) + "\n"
+        self.print_log(result_string)
 
     def print_log(self, text):
         out = QtCore.QDateTime.toString(QtCore.QDateTime.currentDateTime()) + '\t' + str(text) + '\n'
@@ -125,13 +131,13 @@ class MainWindow(QtWidgets.QMainWindow):
         print('closing')
         with open('Log.txt', 'w') as f:
             print(self.log_data, file=f)
-        settings = QtCore.QSettings("./settings.ini", QtCore.QSettings.Format.IniFormat)
+        settings = QtCore.QSettings("./settings/settings.ini", QtCore.QSettings.Format.IniFormat)
         settings.setValue('geometry', self.saveGeometry())
         settings.setValue('windowState', self.saveState())
         super(MainWindow, self).closeEvent(event)
 
     def readSettings(self):
-        settings = QtCore.QSettings("./settings.ini", QtCore.QSettings.Format.IniFormat)
+        settings = QtCore.QSettings("./settings/settings.ini", QtCore.QSettings.Format.IniFormat)
         if settings.value("geometry") is not None:
             self.restoreGeometry(settings.value("geometry"))
         if settings.value("windowState") is not None:

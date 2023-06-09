@@ -54,7 +54,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string> Альфа</string>
+        <string>Параметр регуляризации</string>
        </property>
       </widget>
      </item>

@@ -114,11 +114,11 @@ class TikhonovSettingsWindow(QtWidgets.QWidget):
             self.params.p_size = p_size
 
     def closeEvent(self, event):
-        settings = QtCore.QSettings("./tikhonov_settings.ini", QtCore.QSettings.Format.IniFormat)
+        settings = QtCore.QSettings("./settings/tikhonov_settings.ini", QtCore.QSettings.Format.IniFormat)
         settings.setValue('geometry', self.saveGeometry())
         super().closeEvent(event)
 
     def readSettings(self):
-        settings = QtCore.QSettings("./tikhonov_settings.ini", QtCore.QSettings.Format.IniFormat)
+        settings = QtCore.QSettings("./settings/tikhonov_settings.ini", QtCore.QSettings.Format.IniFormat)
         if settings.value("geometry") is not None:
             self.restoreGeometry(settings.value("geometry"))

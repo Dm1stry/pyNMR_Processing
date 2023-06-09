@@ -64,7 +64,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Тихонов</string>
+          <string>Регуляризация</string>
          </property>
         </widget>
        </item>
